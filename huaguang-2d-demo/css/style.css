@@ -1,0 +1,29 @@
+body,html{
+    padding: 0;
+    margin: 0;
+}
+
+#drawing-pad{
+    margin: 10px;
+    background: #ffffff;
+    border: thin inset #aaaaaa;
+    cursor: default;
+}
+
+#selectGraph{
+    display: flex;
+    margin: 4px 6px;
+    position: relative;
+}
+
+.delete-btn{
+    position: absolute;
+    top: 0;
+    left: 600px;
+    margin: 0 10px;
+    padding: 2px 6px;
+    cursor: pointer;
+    color: #f56c6c;
+    background: #fef0f0;
+    border-color: #fbc4c4;
+}
