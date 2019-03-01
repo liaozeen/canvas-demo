@@ -1,9 +1,12 @@
+var q = document.getElementById('qdutils');
 var app = new Vue({
     el: '#app',
     data: function () {
         return {
             canvas: null,
             ctx: null,
+            x2js: null,
+            fileInput: null,
             isDrawing: false,
             curGraphType: "cursor-move",
             graphs: [],
@@ -17,17 +20,20 @@ var app = new Vue({
             deleteIndex: null,
             scale: 1,
             orginX: 0,
-            orginY: 0
+            orginY: 0,
+            fileIndex: 0
         };
     },
     mounted: function () {
         var vm = this;
         vm.canvas = vm.$refs.canvas;
         vm.ctx = vm.canvas.getContext("2d");
+        vm.x2js = new X2JS();
         vm.canvasWidth = vm.canvas.width;
         vm.canvasHeight = vm.canvas.height;
         vm.transMatrix = vm.inverseMatrix = identity();
         vm.pinch = new Pinch();
+        vm.fileInput = document.getElementById("files");
         vm.canvas.addEventListener('mousedown', vm.mousedown);
         vm.canvas.addEventListener('mousemove', vm.mousemove);
         vm.canvas.addEventListener('mousewheel', vm.mousewheel);
@@ -95,9 +101,7 @@ var app = new Vue({
             }
         },
         mousewheel: function (e) {
-            var vm = this;
             e.preventDefault();
-            var pos = vm.getCanvasLoc(e);
             var wheel = e.deltaY < 0 ? 1 : -1;
             var step = 1.2;
             var sm = matrixScale(1, 1); //缩放矩阵
@@ -156,6 +160,44 @@ var app = new Vue({
                 this.draw(this.transMatrix);
                 this.deleteIndex = null;
             }
+        },
+        exportxml: function () {
+            var json = graph2Json(this.graphs);
+            var xmlStr = '<?xml version="1.0" encoding="gb2312"?>\n';
+            xmlStr += this.x2js.json2xml_str(json);
+            this.fileIndex++;
+            downloadFile(xmlStr, "图形" + this.fileIndex + ".xml");
+        },
+        importXml: function () {
+            var _this = this;
+            importFile(function (xmlStr) {
+                var json = _this.x2js.xml_str2json(xmlStr);
+                var graphs = json2Graph(json);
+                _this.loadData2Canvas(graphs);
+            });
+        },
+        getFile2Input: function () {
+            this.fileInput.click();
+        },
+        loadData2Canvas: function (graphs) {
+            var vm = this;
+            vm.graphs = [];
+            graphs.forEach(function (graph) {
+                var obj;
+                var type = graph.type;
+                if (type === "line") {
+                    obj = new Line(graph, true);
+                }
+                if (type === "rect") {
+                    obj = new Rect(graph, true);
+                }
+                if (type === "round") {
+                    obj = new Round(graph, true);
+                }
+                vm.graphs.push(obj);
+            });
+            vm.transMatrix = vm.inverseMatrix = identity();
+            vm.draw(vm.transMatrix);
         }
     }
 });

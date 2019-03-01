@@ -1,9 +1,13 @@
+let q:any = document.getElementById('qdutils');
+
 let app = new Vue({
     el:'#app',
     data(){
         return{
             canvas:null,
             ctx:null,
+            x2js:null, //xml与 json互转插件
+            fileInput:null,
             isDrawing:false,
             curGraphType:"cursor-move",
             graphs:[],
@@ -17,17 +21,21 @@ let app = new Vue({
             deleteIndex:null,
             scale:1, //当前的缩放比例
             orginX:0,
-            orginY:0
+            orginY:0,
+            
+            fileIndex:0
         }
     },
     mounted(){
         var vm = this
         vm.canvas = vm.$refs.canvas
         vm.ctx = vm.canvas.getContext("2d")
+        vm.x2js = new X2JS()
         vm.canvasWidth = vm.canvas.width
         vm.canvasHeight = vm.canvas.height
         vm.transMatrix = vm.inverseMatrix = identity()
         vm.pinch = new Pinch()
+        vm.fileInput = document.getElementById("files")
         vm.canvas.addEventListener('mousedown', vm.mousedown)
         vm.canvas.addEventListener('mousemove', vm.mousemove)
         vm.canvas.addEventListener('mousewheel',vm.mousewheel)
@@ -96,9 +104,7 @@ let app = new Vue({
             }
         },
         mousewheel(e){
-            let vm = this
             e.preventDefault();
-            let pos = vm.getCanvasLoc(e)
             let wheel = e.deltaY < 0 ? 1 : -1
             let step = 1.2
             let sm = matrixScale(1,1)//缩放矩阵
@@ -160,6 +166,48 @@ let app = new Vue({
                 this.draw(this.transMatrix)
                 this.deleteIndex = null
             }
+        },
+        exportxml(){
+            let json = graph2Json(this.graphs)
+            let xmlStr = '<?xml version="1.0" encoding="gb2312"?>\n'
+            xmlStr += this.x2js.json2xml_str(json)
+            this.fileIndex++
+            downloadFile(xmlStr,"图形"+this.fileIndex+".xml")
+        },
+        importXml(){
+            importFile((xmlStr:string)=>{
+                let json = this.x2js.xml_str2json(xmlStr)
+                let graphs = json2Graph(json)
+                this.loadData2Canvas(graphs)
+            })
+        },
+        getFile2Input(){
+            this.fileInput.click()
+        },
+        loadData2Canvas(graphs:[]){
+            let vm = this
+            vm.graphs = []
+          
+            graphs.forEach( (graph:any) => {
+                let obj:any
+                let type = graph.type
+                
+                if(type === "line"){
+                    obj = new Line(graph,true)
+                }
+
+                if(type === "rect"){
+                    obj = new Rect(graph,true)
+                }
+
+                if(type === "round"){
+                    obj = new Round(graph,true)
+                }
+                vm.graphs.push(obj)
+            })
+            vm.transMatrix = vm.inverseMatrix = identity()
+            vm.draw(vm.transMatrix)
         }
     }
 })
+

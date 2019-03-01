@@ -2,11 +2,23 @@
 class Line{
     type:string = "line"
     points:any[] = [] //第一个顶点为起始点，第二个顶点为结束点
-    constructor(pos:any){
-        this.points[0] = pos
+    constructor(ops:any,isInitData?:boolean){
+        if(isInitData){
+            for(let key in ops){
+                this[key] = ops[key]
+            }
+        }else{
+            this.points[0] = {
+                x:Math.round(ops.x),
+                y:Math.round(ops.y)
+            }
+        }
     }
     update(pos:any){
-        this.points[1] = pos
+        this.points[1] = {
+            x:Math.round(pos.x),
+            y:Math.round(pos.y)
+        }
     }
     draw(ctx:any,transMatrix:any){
         let pos1 = transformPos(this.points[0],transMatrix)
@@ -44,39 +56,43 @@ class Line{
 
 //矩形
 class Rect{
-    startX:number //初始点横坐标
-    startY:number //初始点纵坐标
-    endX:number //结束点点横坐标
-    endY:number //结束点纵坐标
     type:string = "rect"
+    sx:number //绘制开始点横坐标
+    sy:number //绘制开始点纵坐标
     points:any[] //四个顶点的顺序：左上角，右上角，右下角，左下角
-    constructor(pos:any){
-        this.startX = pos.x 
-        this.startY = pos.y
+    constructor(ops:any,isInitData?:boolean){
+        if(isInitData){
+            for(let key in ops){
+                this[key] = ops[key]
+            }
+        }else{
+            this.sx = Math.round(ops.x)
+            this.sy = Math.round(ops.y)
+        }
     }
     update(pos:any){
-        let endX = pos.x
-        let endY = pos.y
+        let endX = Math.round(pos.x)
+        let endY = Math.round(pos.y)
         let p1 = { //矩阵的左上角的坐标
-            x:this.startX,
-            y:this.startY
+            x:this.sx,
+            y:this.sy
         } 
         let p2 = {//矩阵的右下角的坐标
             x:endX,
             y:endY
         } 
 
-        if(endX > this.startX && endY < this.startY){ //初始点为原点，结束点在第一象限
+        if(endX > this.sx && endY < this.sy){ //初始点为原点，结束点在第一象限
             p1.y = endY
-            p2.y = this.startY
+            p2.y = this.sy
         }
-        if(endX <= this.startX && endY <= this.startY){ //初始点为原点，结束点在第二象限
+        if(endX <= this.sx && endY <= this.sy){ //初始点为原点，结束点在第二象限
             [p1,p2] = [p2,p1]
         }
      
-        if(endX < this.startX && endY > this.startY){ //初始点为原点，结束点在第三象限
+        if(endX < this.sx && endY > this.sy){ //初始点为原点，结束点在第三象限
             p1.x = endX
-            p2.x = this.startX
+            p2.x = this.sx
         }
       
         this.points = [
@@ -109,6 +125,7 @@ class Rect{
 
 //椭圆
 class Round{
+    type:string = "round"
     x:number //椭圆圆心的 x 轴坐标
     y:number //椭圆圆心的 y 轴坐标
     radiusX:number //椭圆长轴的半径
@@ -118,15 +135,20 @@ class Round{
     eAngle:number = 2 * Math.PI//结束角
     startX:number //初始点横坐标
     startY:number //初始点纵坐标
-    type:string = "round"
     points:any[]
-    constructor(pos:any){
-        this.startX = pos.x
-        this.startY = pos.y
+    constructor(ops:any,isInitData?:boolean){
+        if(isInitData){
+            for(let key in ops){
+                this[key] = ops[key]
+            }
+        }else{
+            this.startX = Math.round(ops.x) 
+            this.startY = Math.round(ops.y)
+        }
     }
     update(pos:any){
-        let endX = pos.x
-        let endY = pos.y
+        let endX = Math.round(pos.x)
+        let endY = Math.round(pos.y)
         this.radiusX = Math.abs(endX - this.startX) / 2
         this.radiusY = Math.abs(endY - this.startY) / 2
 

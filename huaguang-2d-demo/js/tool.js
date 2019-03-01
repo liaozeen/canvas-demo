@@ -1,12 +1,25 @@
 //直线
 var Line = /** @class */ (function () {
-    function Line(pos) {
+    function Line(ops, isInitData) {
         this.type = "line";
         this.points = []; //第一个顶点为起始点，第二个顶点为结束点
-        this.points[0] = pos;
+        if (isInitData) {
+            for (var key in ops) {
+                this[key] = ops[key];
+            }
+        }
+        else {
+            this.points[0] = {
+                x: Math.round(ops.x),
+                y: Math.round(ops.y)
+            };
+        }
     }
     Line.prototype.update = function (pos) {
-        this.points[1] = pos;
+        this.points[1] = {
+            x: Math.round(pos.x),
+            y: Math.round(pos.y)
+        };
     };
     Line.prototype.draw = function (ctx, transMatrix) {
         var pos1 = transformPos(this.points[0], transMatrix);
@@ -41,33 +54,40 @@ var Line = /** @class */ (function () {
 }());
 //矩形
 var Rect = /** @class */ (function () {
-    function Rect(pos) {
+    function Rect(ops, isInitData) {
         this.type = "rect";
-        this.startX = pos.x;
-        this.startY = pos.y;
+        if (isInitData) {
+            for (var key in ops) {
+                this[key] = ops[key];
+            }
+        }
+        else {
+            this.sx = Math.round(ops.x);
+            this.sy = Math.round(ops.y);
+        }
     }
     Rect.prototype.update = function (pos) {
         var _a;
-        var endX = pos.x;
-        var endY = pos.y;
+        var endX = Math.round(pos.x);
+        var endY = Math.round(pos.y);
         var p1 = {
-            x: this.startX,
-            y: this.startY
+            x: this.sx,
+            y: this.sy
         };
         var p2 = {
             x: endX,
             y: endY
         };
-        if (endX > this.startX && endY < this.startY) { //初始点为原点，结束点在第一象限
+        if (endX > this.sx && endY < this.sy) { //初始点为原点，结束点在第一象限
             p1.y = endY;
-            p2.y = this.startY;
+            p2.y = this.sy;
         }
-        if (endX <= this.startX && endY <= this.startY) { //初始点为原点，结束点在第二象限
+        if (endX <= this.sx && endY <= this.sy) { //初始点为原点，结束点在第二象限
             _a = [p2, p1], p1 = _a[0], p2 = _a[1];
         }
-        if (endX < this.startX && endY > this.startY) { //初始点为原点，结束点在第三象限
+        if (endX < this.sx && endY > this.sy) { //初始点为原点，结束点在第三象限
             p1.x = endX;
-            p2.x = this.startX;
+            p2.x = this.sx;
         }
         this.points = [
             p1,
@@ -98,17 +118,24 @@ var Rect = /** @class */ (function () {
 }());
 //椭圆
 var Round = /** @class */ (function () {
-    function Round(pos) {
+    function Round(ops, isInitData) {
+        this.type = "round";
         this.rotation = 0; //椭圆的旋转角度
         this.sAngle = 0; //起始角
         this.eAngle = 2 * Math.PI; //结束角
-        this.type = "round";
-        this.startX = pos.x;
-        this.startY = pos.y;
+        if (isInitData) {
+            for (var key in ops) {
+                this[key] = ops[key];
+            }
+        }
+        else {
+            this.startX = Math.round(ops.x);
+            this.startY = Math.round(ops.y);
+        }
     }
     Round.prototype.update = function (pos) {
-        var endX = pos.x;
-        var endY = pos.y;
+        var endX = Math.round(pos.x);
+        var endY = Math.round(pos.y);
         this.radiusX = Math.abs(endX - this.startX) / 2;
         this.radiusY = Math.abs(endY - this.startY) / 2;
         if (endX > this.startX && endY < this.startY) { //初始点为原点，结束点在第一象限

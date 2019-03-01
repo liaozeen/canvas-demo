@@ -1,10 +1,12 @@
 //窗口的鼠标坐标转换为 canvas 坐标
 function winToCanvas(canvas:any,x:number,y:number){
     let bbox = canvas.getBoundingClientRect()
-    return {
+    let pos = {
         x:x - bbox.left * (canvas.width / bbox.width),
         y:y - bbox.top * (canvas.height / bbox.height)
     }
+
+    return pos
 }
 //两点间的距离
 function distBetween2points(x1:number,y1:number,x2:number,y2:number){
@@ -191,7 +193,85 @@ function transformPos(pos:any,transMatrix:any){
     let posMatrix2 = matrixMultiply(transMatrix,posMatrix1)
 
     return{
-        x:posMatrix2[0],
-        y:posMatrix2[1]
+        x:Math.round(posMatrix2[0]) ,
+        y:Math.round(posMatrix2[1])
     }
+}
+
+//图形数组数据转为 json 格式
+function graph2Json(graphs:[]){
+    let json = {
+        "画布":{
+            "图形":[]
+        }
+    }
+
+    graphs.forEach((graph:any)=>{
+        let obj = {}
+        for(let key in graph){
+            if(typeof graph[key] === "function") continue
+           
+            if(key != "points"){
+                obj["_"+key] = graph[key]
+            }else{
+                obj["_"+key] = JSON.stringify(graph[key])
+            }
+        }
+        json["画布"]["图形"].push(obj)
+    })
+    return json
+}
+
+//json格式转图形数组数据
+function json2Graph(json:any){
+    let graphs = []
+    if(!json || !json['画布'] || typeof json['画布']['图形'] === "string") return graphs
+    let arr = json['画布']['图形']
+    if( (arr instanceof Array) === false){
+        arr = [arr]
+    }
+
+    arr.forEach(obj => {
+        let newObj = {}
+        for(let key in obj){
+            let newKey = key.replace(/_/,"")
+            let value = obj[key]
+            if(key === "_points"){
+                value = JSON.parse(value)
+            }
+            let isNan = isNaN(parseFloat(value)) //判断是否为浮点数的字符串
+            newObj[newKey] = isNan ? value : parseFloat(value)
+        }
+        graphs.push(newObj)
+    });
+    return graphs
+}
+
+//导出 xml 文件
+function downloadFile(text:string,filename){
+    window.URL = window.webkitURL || window.URL;
+    var MIME_TYPE = 'text/xml';
+    var bb = new Blob([text], {type: MIME_TYPE});
+    var a = document.createElement('a');
+    a.download = filename;
+    a.href = window.URL.createObjectURL(bb);
+    a.textContent = 'Download ready';
+    a.dataset.downloadurl = [MIME_TYPE, a.download, a.href].join(':');
+    a.click();
+}
+
+//导入文件
+function importFile(callback:any){
+    var selectedFile = document.getElementById("files").files[0];//获取读取的File对象
+    var name = selectedFile.name;//读取选中文件的文件名
+    var size = selectedFile.size;//读取选中文件的大小
+    console.log("文件名:"+name+"大小："+size);
+
+    var reader = new FileReader();//这里是核心！！！读取操作就是由它完成的。
+    reader.readAsText(selectedFile);//读取文件的内容
+
+    reader.onload = function(){
+        callback(this.result)
+        console.log(this.result);//当读取完成之后会回调这个函数，然后此时文件的内容存储到了result中。直接操作即可。
+    }; 
 }

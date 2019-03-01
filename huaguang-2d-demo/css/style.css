@@ -15,14 +15,20 @@ body,html{
     margin: 4px 6px;
     position: relative;
 }
-
-.delete-btn{
+.tool-bar{
     position: absolute;
     top: 0;
     left: 600px;
+    display: flex;
+}
+.tool-btn{
     margin: 0 10px;
     padding: 2px 6px;
     cursor: pointer;
+    background: #56B1F6;
+    color: #ffffff;
+}
+.delete-btn{
     color: #f56c6c;
     background: #fef0f0;
     border-color: #fbc4c4;
