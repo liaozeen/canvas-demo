@@ -230,7 +230,6 @@ class Pinch{
         ctx.beginPath()
 
         ctx.strokeStyle = "#63DAA2"
-        console.log(this.points)
         //画四个小正方形
         for(let i=0;i< this.points.length;i++){
             let pos = transformPos(this.points[i],transMatrix)

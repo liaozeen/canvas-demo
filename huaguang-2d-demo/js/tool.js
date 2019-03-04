@@ -214,7 +214,6 @@ var Pinch = /** @class */ (function () {
         ctx.save();
         ctx.beginPath();
         ctx.strokeStyle = "#63DAA2";
-        console.log(this.points);
         //画四个小正方形
         for (var i = 0; i < this.points.length; i++) {
             var pos = transformPos(this.points[i], transMatrix);

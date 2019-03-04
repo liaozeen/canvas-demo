@@ -1,29 +1,32 @@
-let q:any = document.getElementById('qdutils');
-
 let app = new Vue({
     el:'#app',
     data(){
         return{
-            canvas:null,
-            ctx:null,
-            x2js:null, //xml与 json互转插件
-            fileInput:null,
-            isDrawing:false,
-            curGraphType:"cursor-move",
-            graphs:[],
-            curGraph:null,
-            canAddGraph:true,
+            canvas:null,//canvas画布
+            ctx:null, //2d绘制上下文
+            x2js:null, //xml与json互转插件
+            fileInput:null, //inputFile 元素
+            isDrawing:false,//是否可以绘制
+            curGraphType:"cursor-move", //当前的工具栏选项
+            graphs:[],//所有需要绘制的图形
+            curGraph:null,//当前正在绘制的图形
+            selectGraph:null, //当前选中的图形
+            deleteIndex:null, //表示删除对应 graphs 数组的序号的图形数据
+            canAddGraph:true, //是否可以添加图形
             TM:null, //临时平移矩阵，用于移动画布
             transMatrix:null, //变换矩阵
             inverseMatrix:null, //变换矩阵的逆矩阵
             startPos:null, //鼠标一开始点击的位置
             pinch:null, //选中样式框
-            deleteIndex:null,
             scale:1, //当前的缩放比例
-            orginX:0,
-            orginY:0,
-            
-            fileIndex:0
+            fileIndex:0, //用于导出文件的命名
+            curParam:{ //当前图形的属性
+                x:null,
+                y:null,
+                w:null,
+                h:null,
+                l:null
+            }
         }
     },
     mounted(){
@@ -66,15 +69,19 @@ let app = new Vue({
                         this.pinch.update(graph.points)
                         isPinch = true
                         this.deleteIndex = i
+                        this.selectGraph = graph
                         break
                     }
                 }
                 if(!isPinch){
                     this.deleteIndex = null
+                    this.selectGraph = null
                     this.pinch.update()
                 }
+                this.showCurGraphParam(this.selectGraph)
                 this.draw(this.transMatrix)
             }
+            // console.log("down",this.transMatrix)
         },
         mousemove(e){
             if(!this.isDrawing) return
@@ -93,6 +100,7 @@ let app = new Vue({
             }else{
                 this.moveCvs(pos)
             }
+            // console.log("move",this.transMatrix)
         },
         mouseup(e){
             this.canvas.style.cursor = "default"
@@ -102,6 +110,7 @@ let app = new Vue({
                 this.transMatrix = this.TM
                 this.inverseMatrix = inverse(this.transMatrix)
             }
+            // console.log("up",this.transMatrix)
         },
         mousewheel(e){
             e.preventDefault();
@@ -129,6 +138,7 @@ let app = new Vue({
             // this.transMatrix = matrixMultiply(tm,this.transMatrix)
             this.inverseMatrix = inverse(this.transMatrix)
             this.draw(this.transMatrix)
+            console.log("wheel",this.transMatrix)
         },
         selectGraphClass(pos:any):any{
             let graph = null
@@ -207,6 +217,100 @@ let app = new Vue({
             })
             vm.transMatrix = vm.inverseMatrix = identity()
             vm.draw(vm.transMatrix)
+        },
+        isDisabled(data){
+            if(data !== 0 && data != "" && !data){
+                return true
+            }else{
+                return false
+            }
+        },
+        showCurGraphParam(graph:any){
+            this.curParam = {
+                x:null,
+                y:null,
+                w:null,
+                h:null,
+                l:null
+            }
+            if(graph){
+                let type = graph.type
+                let x1 = graph.points[0].x
+                let y1 = graph.points[0].y
+                this.curParam.x = x1
+                this.curParam.y = y1
+
+                if(type == "line"){
+                    let x2 = graph.points[1].x
+                    let y2 = graph.points[1].y
+                    this.curParam.l = distBetween2points(x1,y1,x2,y2)
+                }else{
+                    let x3 = graph.points[2].x
+                    let y3 = graph.points[2].y
+                    let w = x3 - x1
+                    let h = y3 - y1
+                    this.curParam.w = w
+                    this.curParam.h = h
+                }
+            }
+        },
+        setGraphSize(type:string){
+            let graph = this.selectGraph
+            let points = graph.points
+            if(type === "x"){
+                let offsetX = this.curParam.x - points[0].x
+                points[0].x = this.curParam.x
+             
+                for(let i=1;i<points.length;i++){
+                    points[i].x += offsetX
+                }
+            }
+            if(type === "y"){
+                let offsetY = this.curParam.y - points[0].y
+                points[0].y = this.curParam.y
+             
+                for(let i=1;i<points.length;i++){
+                    points[i].y += offsetY
+                }
+            }
+            
+            if(type === "w"){
+                let x2 = points[0].x + this.curParam.w
+                //改变右上角和右下角的x坐标
+                points[1].x = x2
+                points[2].x = x2
+            }
+
+            if(type === "h"){
+                let y2 = points[0].y + this.curParam.h
+                //改变右下角和左下角的y坐标
+                points[2].y = y2
+                points[3].y = y2
+            }
+
+            if(type === "l"){
+                let x1 = points[0].x
+                let y1 = points[0].y
+                let x2 = points[1].x
+                let y2 = points[1].y
+                let w1 = x2 - x1
+                let h1 = y2 - y1
+                let l1 = distBetween2points(x1,y1,x2,y2)
+                let l2 = this.curParam.l | 1
+                let rate = l1/l2
+                let w2 = w1 / rate
+                let h2 = h1 / rate
+                points[1].x = x1 + w2
+                points[1].y = y1 + h2
+            }
+
+            if(graph.type === "round"){
+                graph.radiusX = this.curParam.w/2
+                graph.radiusY = this.curParam.h/2
+                graph.x = points[0].x + graph.radiusX
+                graph.y = points[0].y + graph.radiusY
+            }
+            this.draw(this.transMatrix)
         }
     }
 })

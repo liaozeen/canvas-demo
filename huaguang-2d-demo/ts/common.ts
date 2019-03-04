@@ -10,7 +10,9 @@ function winToCanvas(canvas:any,x:number,y:number){
 }
 //两点间的距离
 function distBetween2points(x1:number,y1:number,x2:number,y2:number){
-    return Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2))
+    let res = Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2))
+    res = Math.round(res)
+    return res
 }
 
 //坐标的三阶矩阵
@@ -271,7 +273,6 @@ function importFile(callback:any){
     reader.readAsText(selectedFile);//读取文件的内容
 
     reader.onload = function(){
-        callback(this.result)
-        console.log(this.result);//当读取完成之后会回调这个函数，然后此时文件的内容存储到了result中。直接操作即可。
+        callback(this.result)//当读取完成之后会回调这个函数，然后此时文件的内容存储到了result中。直接操作即可。
     }; 
 }

@@ -1,4 +1,3 @@
-var q = document.getElementById('qdutils');
 var app = new Vue({
     el: '#app',
     data: function () {
@@ -11,17 +10,23 @@ var app = new Vue({
             curGraphType: "cursor-move",
             graphs: [],
             curGraph: null,
+            selectGraph: null,
+            deleteIndex: null,
             canAddGraph: true,
             TM: null,
             transMatrix: null,
             inverseMatrix: null,
             startPos: null,
             pinch: null,
-            deleteIndex: null,
             scale: 1,
-            orginX: 0,
-            orginY: 0,
-            fileIndex: 0
+            fileIndex: 0,
+            curParam: {
+                x: null,
+                y: null,
+                w: null,
+                h: null,
+                l: null
+            }
         };
     },
     mounted: function () {
@@ -63,15 +68,19 @@ var app = new Vue({
                         this.pinch.update(graph.points);
                         isPinch = true;
                         this.deleteIndex = i;
+                        this.selectGraph = graph;
                         break;
                     }
                 }
                 if (!isPinch) {
                     this.deleteIndex = null;
+                    this.selectGraph = null;
                     this.pinch.update();
                 }
+                this.showCurGraphParam(this.selectGraph);
                 this.draw(this.transMatrix);
             }
+            // console.log("down",this.transMatrix)
         },
         mousemove: function (e) {
             if (!this.isDrawing)
@@ -90,6 +99,7 @@ var app = new Vue({
             else {
                 this.moveCvs(pos);
             }
+            // console.log("move",this.transMatrix)
         },
         mouseup: function (e) {
             this.canvas.style.cursor = "default";
@@ -99,6 +109,7 @@ var app = new Vue({
                 this.transMatrix = this.TM;
                 this.inverseMatrix = inverse(this.transMatrix);
             }
+            // console.log("up",this.transMatrix)
         },
         mousewheel: function (e) {
             e.preventDefault();
@@ -125,6 +136,7 @@ var app = new Vue({
             // this.transMatrix = matrixMultiply(tm,this.transMatrix)
             this.inverseMatrix = inverse(this.transMatrix);
             this.draw(this.transMatrix);
+            console.log("wheel", this.transMatrix);
         },
         selectGraphClass: function (pos) {
             var graph = null;
@@ -198,6 +210,95 @@ var app = new Vue({
             });
             vm.transMatrix = vm.inverseMatrix = identity();
             vm.draw(vm.transMatrix);
+        },
+        isDisabled: function (data) {
+            if (data !== 0 && data != "" && !data) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        },
+        showCurGraphParam: function (graph) {
+            this.curParam = {
+                x: null,
+                y: null,
+                w: null,
+                h: null,
+                l: null
+            };
+            if (graph) {
+                var type = graph.type;
+                var x1 = graph.points[0].x;
+                var y1 = graph.points[0].y;
+                this.curParam.x = x1;
+                this.curParam.y = y1;
+                if (type == "line") {
+                    var x2 = graph.points[1].x;
+                    var y2 = graph.points[1].y;
+                    this.curParam.l = distBetween2points(x1, y1, x2, y2);
+                }
+                else {
+                    var x3 = graph.points[2].x;
+                    var y3 = graph.points[2].y;
+                    var w = x3 - x1;
+                    var h = y3 - y1;
+                    this.curParam.w = w;
+                    this.curParam.h = h;
+                }
+            }
+        },
+        setGraphSize: function (type) {
+            var graph = this.selectGraph;
+            var points = graph.points;
+            if (type === "x") {
+                var offsetX = this.curParam.x - points[0].x;
+                points[0].x = this.curParam.x;
+                for (var i = 1; i < points.length; i++) {
+                    points[i].x += offsetX;
+                }
+            }
+            if (type === "y") {
+                var offsetY = this.curParam.y - points[0].y;
+                points[0].y = this.curParam.y;
+                for (var i = 1; i < points.length; i++) {
+                    points[i].y += offsetY;
+                }
+            }
+            if (type === "w") {
+                var x2 = points[0].x + this.curParam.w;
+                //改变右上角和右下角的x坐标
+                points[1].x = x2;
+                points[2].x = x2;
+            }
+            if (type === "h") {
+                var y2 = points[0].y + this.curParam.h;
+                //改变右下角和左下角的y坐标
+                points[2].y = y2;
+                points[3].y = y2;
+            }
+            if (type === "l") {
+                var x1 = points[0].x;
+                var y1 = points[0].y;
+                var x2 = points[1].x;
+                var y2 = points[1].y;
+                var w1 = x2 - x1;
+                var h1 = y2 - y1;
+                var l1 = distBetween2points(x1, y1, x2, y2);
+                var l2 = this.curParam.l | 1;
+                var rate = l1 / l2;
+                var w2 = w1 / rate;
+                var h2 = h1 / rate;
+                points[1].x = x1 + w2;
+                points[1].y = y1 + h2;
+            }
+            if (graph.type === "round") {
+                graph.radiusX = this.curParam.w / 2;
+                graph.radiusY = this.curParam.h / 2;
+                graph.x = points[0].x + graph.radiusX;
+                graph.y = points[0].y + graph.radiusY;
+            }
+            this.draw(this.transMatrix);
         }
     }
 });

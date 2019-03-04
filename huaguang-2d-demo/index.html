@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>2d 项目</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <object id="qdutils" class="objStyle" type="application/plugin-QdUtils.dll" width=0 height=0></object>
     <link rel="stylesheet" type="text/css" media="screen" href="css/style.css">
     <script src="js/lib/vue.min.js"></script>
     <script src="js/lib/xml2json.js"></script>
@@ -23,16 +22,31 @@
             <label for="rect">矩形</label>
             <input type="radio" id="round" value="round" v-model="curGraphType">
             <label for="round">圆形</label>
-            <div class="tool-bar">
-                <div class="tool-btn delete-btn" @click = "deleteGraph">删除</div>
-                <div class="tool-btn" @click = "exportxml">导出xml</div>
-                <input type="file" id="files"  accept="text/xml, application/xml"  style="display:none" @change="importXml();"/>
-                <div class="tool-btn" type="button" id="import" @click = "getFile2Input">导入xml</div>
-                <!-- <div class="tool-btn" @click = "importxml">导入xml</div> -->
-            </div>
-           
+            <div class="param-box">
+                <div class="param-item">
+                    <span>x :</span><input class="input-disabled" type="number" v-model.number="curParam.x"  :disabled="isDisabled(curParam.x)" @input="setGraphSize('x')"/>
+                </div>
+                <div class="param-item">
+                    <span>y :</span><input type="number" v-model.number="curParam.y" :disabled="isDisabled(curParam.y)" @input="setGraphSize('y')"/>
+                </div>
+                <div class="param-item">
+                    <span>w :</span><input type="number" v-model.number="curParam.w" :disabled="isDisabled(curParam.w)" @input="setGraphSize('w')"/>
+                </div>
+                <div class="param-item">
+                    <span>h :</span><input type="number" v-model.number="curParam.h" :disabled="isDisabled(curParam.h)" @input="setGraphSize('h')"/>
+                </div>
+                <div class="param-item">
+                    <span>l :</span><input type="number" v-model.number="curParam.l" :disabled="isDisabled(curParam.l)" @input="setGraphSize('l')"/>
+                </div>
+            </div>   
         </div>
         <canvas ref="canvas" id='drawing-pad' width='800' height='600'></canvas>
+        <div class="tool-bar">
+            <div class="tool-btn delete-btn" @click = "deleteGraph">删除</div>
+            <div class="tool-btn" @click = "exportxml">导出xml</div>
+            <input type="file" id="files"  accept="text/xml, application/xml"  style="display:none" @change="importXml();"/>
+            <div class="tool-btn" type="button" id="import" @click = "getFile2Input">导入xml</div>
+        </div>   
     </div>
     <script src="js/app.js"></script>
 </body>

@@ -3,6 +3,22 @@ body,html{
     margin: 0;
 }
 
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+input[type="number"]{
+    -moz-appearance: textfield;
+}
+
+input:disabled{
+    height: 18px;
+    border:1px solid #dcdfe6;
+    background-color: #f5f7fa;
+    border-color: #e4e7ed;
+    color: #c0c4cc;
+}
+
 #drawing-pad{
     margin: 10px;
     background: #ffffff;
@@ -15,10 +31,21 @@ body,html{
     margin: 4px 6px;
     position: relative;
 }
+.param-box{
+    display: flex;
+    margin-left: 10px;
+}
+
+.param-item{
+    margin-left: 6px;
+}
+
+.param-item input{
+    width: 36px;
+    margin-left: 4px;
+}
+
 .tool-bar{
-    position: absolute;
-    top: 0;
-    left: 600px;
     display: flex;
 }
 .tool-btn{
