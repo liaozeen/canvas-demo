@@ -1,0 +1,66 @@
+body,html{
+    padding: 0;
+    margin: 0;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+input[type="number"]{
+    -moz-appearance: textfield;
+}
+
+input:disabled{
+    height: 18px;
+    border:1px solid #dcdfe6;
+    background-color: #f5f7fa;
+    border-color: #e4e7ed;
+    color: #c0c4cc;
+}
+
+#drawing-pad{
+    margin: 10px;
+    background: #ffffff;
+    border: thin inset #aaaaaa;
+    cursor: default;
+}
+
+#selectGraph{
+    display: flex;
+    margin: 4px 6px;
+    position: relative;
+}
+.param-box{
+    display: flex;
+    flex-wrap: wrap ;
+    width: 900px;
+    margin-left: 10px;
+}
+
+.param-item{
+    width: 90px;
+    margin: 6px 0;
+    margin-left: 6px;
+}
+
+.param-item input{
+    width: 36px;
+    margin-left: 4px;
+}
+
+.tool-bar{
+    display: flex;
+}
+.tool-btn{
+    margin: 0 10px;
+    padding: 2px 6px;
+    cursor: pointer;
+    background: #56B1F6;
+    color: #ffffff;
+}
+.delete-btn{
+    color: #f56c6c;
+    background: #fef0f0;
+    border-color: #fbc4c4;
+}

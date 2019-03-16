@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>x2d图形显示</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/style.css">
+    <script src="js/lib/vue.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/tool.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div id="selectGraph">
+            <div class="param-box" id="param-box">
+                <div class="param-item">
+                    <span>L :</span><input type="number" v-model.number="curParam.L" :disabled="isDisabled(curParam.L)" @input="setGraphSize('L')"/>
+                </div>
+                <div class="param-item">
+                    <span>W :</span><input type="number" v-model.number="curParam.W" :disabled="isDisabled(curParam.W)" @input="setGraphSize('W')"/>
+                </div>
+                <div class="param-item">
+                    <span>CA :</span><input type="number" v-model.number="curParam.CA" :disabled="isDisabled(curParam.CA)" @input="setGraphSize('CA')"/>
+                </div>
+                <div class="param-item">
+                    <span>CB :</span><input type="number" v-model.number="curParam.CB" :disabled="isDisabled(curParam.CB)" @input="setGraphSize('CB')"/>
+                </div>
+                <div class="param-item">
+                    <span>CC :</span><input type="number" v-model.number="curParam.CC" :disabled="isDisabled(curParam.CC)" @input="setGraphSize('CC')"/>
+                </div>
+                <div class="param-item">
+                    <span>CD :</span><input type="number" v-model.number="curParam.CD" :disabled="isDisabled(curParam.CD)" @input="setGraphSize('CD')"/>
+                </div>
+                <div class="param-item">
+                    <span>CE :</span><input type="number" v-model.number="curParam.CE" :disabled="isDisabled(curParam.CE)" @input="setGraphSize('CE')"/>
+                </div>
+                <div class="param-item">
+                    <span>CF :</span><input type="number" v-model.number="curParam.CF" :disabled="isDisabled(curParam.CF)" @input="setGraphSize('CF')"/>
+                </div>
+                <div class="param-item">
+                    <span>CG :</span><input type="number" v-model.number="curParam.CG" :disabled="isDisabled(curParam.CG)" @input="setGraphSize('CG')"/>
+                </div>
+                <div class="param-item">
+                    <span>CH :</span><input type="number" v-model.number="curParam.CH" :disabled="isDisabled(curParam.CH)" @input="setGraphSize('CH')"/>
+                </div>
+                <div class="param-item">
+                    <span>CI :</span><input type="number" v-model.number="curParam.CI" :disabled="isDisabled(curParam.CI)" @input="setGraphSize('CI')"/>
+                </div>
+                <div class="param-item">
+                    <span>CJ :</span><input type="number" v-model.number="curParam.CJ" :disabled="isDisabled(curParam.CJ)" @input="setGraphSize('CJ')"/>
+                </div>
+                <div class="param-item">
+                    <span>CK :</span><input type="number" v-model.number="curParam.CK" :disabled="isDisabled(curParam.CK)" @input="setGraphSize('CK')"/>
+                </div>
+                <div class="param-item">
+                    <span>CL :</span><input type="number" v-model.number="curParam.CL" :disabled="isDisabled(curParam.CL)" @input="setGraphSize('CL')"/>
+                </div>
+                <div class="param-item">
+                    <span>CM :</span><input type="number" v-model.number="curParam.CM" :disabled="isDisabled(curParam.CM)" @input="setGraphSize('CM')"/>
+                </div>
+                <div class="param-item">
+                    <span>CN :</span><input type="number" v-model.number="curParam.CN" :disabled="isDisabled(curParam.CN)" @input="setGraphSize('CN')"/>
+                </div>
+                <div class="param-item">
+                    <span>CO :</span><input type="number" v-model.number="curParam.CO" :disabled="isDisabled(curParam.CO)" @input="setGraphSize('CO')"/>
+                </div>
+                <div class="param-item">
+                    <span>CP :</span><input type="number" v-model.number="curParam.CP" :disabled="isDisabled(curParam.CP)" @input="setGraphSize('CP')"/>
+                </div>
+            </div>   
+        </div>
+        <canvas ref="canvas" id='drawing-pad' width='900' height='600'></canvas>
+        <div class="tool-bar">
+            <div class="tool-btn" @click = "exportxml">导出x2d</div>
+            <input type="file" id="files" style="display:none" @change="importXml();"/>
+            <div class="tool-btn" type="button" id="import" @click = "getFile2Input">导入x2d</div>
+        </div>   
+    </div>
+    <script src="js/app.js"></script>
+</body>
+</html>
