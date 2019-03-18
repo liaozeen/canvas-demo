@@ -237,3 +237,8 @@ var Pinch = /** @class */ (function () {
     };
     return Pinch;
 }());
+var Graph = /** @class */ (function () {
+    function Graph() {
+    }
+    return Graph;
+}());

@@ -100,7 +100,6 @@ let app = new Vue({
             }else{
                 this.moveCvs(pos)
             }
-            // console.log("move",this.transMatrix)
         },
         mouseup(e){
             this.canvas.style.cursor = "default"
@@ -110,7 +109,6 @@ let app = new Vue({
                 this.transMatrix = this.TM
                 this.inverseMatrix = inverse(this.transMatrix)
             }
-            // console.log("up",this.transMatrix)
         },
         mousewheel(e){
             e.preventDefault();

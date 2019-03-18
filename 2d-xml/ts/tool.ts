@@ -255,3 +255,7 @@ class Pinch{
         ctx.restore()
     }
 }
+
+class Graph{
+    
+}

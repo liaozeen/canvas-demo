@@ -44,7 +44,7 @@
         <div class="tool-bar">
             <div class="tool-btn delete-btn" @click = "deleteGraph">删除</div>
             <div class="tool-btn" @click = "exportxml">导出xml</div>
-            <input type="file" id="files"  accept="text/xml, application/xml"  style="display:none" @change="importXml();"/>
+            <input type="file" id="files"  style="display:none" @change="importXml();"/>
             <div class="tool-btn" type="button" id="import" @click = "getFile2Input">导入xml</div>
         </div>   
     </div>

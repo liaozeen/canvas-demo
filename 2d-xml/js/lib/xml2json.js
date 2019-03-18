@@ -491,6 +491,7 @@
        }
        
        this.parseXmlString = function(xmlDocStr) {
+           console.log(xmlDocStr)
            var isIEParser = window.ActiveXObject || "ActiveXObject" in window;
            if (xmlDocStr === undefined) {
                return null;
@@ -565,6 +566,7 @@
        
        this.xml_str2json = function (xmlDocStr) {
            var xmlDoc = this.parseXmlString(xmlDocStr);
+          
            if(xmlDoc!=null)
                return this.xml2json(xmlDoc);
            else
