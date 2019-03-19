@@ -37,6 +37,7 @@ var app = new Vue({
         vm.canvas.addEventListener('mousemove', vm.mousemove);
         vm.canvas.addEventListener('mousewheel', vm.mousewheel);
         document.addEventListener('mouseup', vm.mouseup);
+        vm.ctx.transform(1, 0, 0, -1, 0, vm.canvas.height);
         vm.initMatrix();
     },
     methods: {
@@ -123,7 +124,7 @@ var app = new Vue({
             this.canvas.style.cursor = "pointer";
             var offsetX = pos.x - this.startPos.x;
             var offsetY = pos.y - this.startPos.y;
-            var tm = matrixTranslation(offsetX, offsetY);
+            var tm = matrixTranslation(offsetX, -offsetY);
             this.TM = matrixMultiply(tm, this.transMatrix);
             this.draw(this.TM);
         },

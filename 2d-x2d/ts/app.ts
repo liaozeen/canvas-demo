@@ -37,6 +37,7 @@ let app = new Vue({
         vm.canvas.addEventListener('mousemove', vm.mousemove)
         vm.canvas.addEventListener('mousewheel',vm.mousewheel)
         document.addEventListener('mouseup', vm.mouseup);
+        vm.ctx.transform(1,0,0,-1,0,vm.canvas.height)
         vm.initMatrix()
     },
     methods:{
@@ -123,7 +124,7 @@ let app = new Vue({
             this.canvas.style.cursor = "pointer"
             let offsetX = pos.x - this.startPos.x
             let offsetY = pos.y - this.startPos.y
-            let tm = matrixTranslation(offsetX,offsetY)
+            let tm = matrixTranslation(offsetX,-offsetY)
             this.TM = matrixMultiply(tm,this.transMatrix)
             this.draw(this.TM)
         },
@@ -161,7 +162,6 @@ let app = new Vue({
         //加载数据显示到画布上
         loadData2Canvas(json:any){
             if(!json) return
-            
             let vm = this
             let obj = json[0]
             let graph:any = vm.selectGraph =  new Graph(obj)

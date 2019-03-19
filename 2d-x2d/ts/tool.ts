@@ -212,9 +212,10 @@ class Label{
         // ctx.translate(centerX, centerY);
         // ctx.rotate(Math.PI / 180 * angle)
         // ctx.fillText(len, 0,0)
+        ctx.transform(1,0,0,-1,0,0)
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
-        ctx.fillText(len,centerX, centerY)
+        ctx.fillText(len,centerX, -centerY)
         ctx.restore()
     }
 }
